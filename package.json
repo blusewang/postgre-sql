@@ -1,0 +1,29 @@
+{
+  "name": "node-postgres-builder",
+  "version": "0.1.0",
+  "description": "A SQLBuilder based on node-postgres",
+  "main": "main",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blusewang/node-postgres-builder.git"
+  },
+  "keywords": [
+    "pg",
+    "pool",
+    "sql",
+    "builder"
+  ],
+  "author": "bluse <bluse@189.cn>",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/blusewang/node-postgres-builder/issues"
+  },
+  "homepage": "https://github.com/blusewang/node-postgres-builder#readme",
+  "dependencies": {
+    "pg": "^6.4.0",
+    "pg-native": "^1.10.1"
+  }
+}
