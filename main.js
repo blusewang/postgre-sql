@@ -2,11 +2,14 @@
  * Created by bluse on 17/6/27.
  */
 const {Pool} = require('pg').native;
-const myPool = new Pool({user:'postgres',database:'test',max:2,idleTimeoutMillis:100});
 const {promisify, l} = require('./src/helper');
 const dbhelper = require('./src/dbhelper');
 
 
+let myPool = null;
+const connect = (config)=>{
+    if(myPool === null) myPool = new Pool(config);
+};
 
 class db {
     constructor() {
@@ -260,4 +263,4 @@ class db {
 }
 
 
-module.exports = db;
+module.exports = {client:db,connect:connect};

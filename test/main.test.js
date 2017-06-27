@@ -3,13 +3,14 @@
  */
 const {expect} = require("chai");
 const {describe,beforeEach,it} = require("mocha");
-const myDb = require('../main');
+const {client,connect} = require('../main');
 const {promisify,l} = require('../src/helper');
 
 describe('测试Builder',()=>{
     let db;
     beforeEach(()=>{
-        db = new myDb();
+        connect({user:'postgres',database:'test',max:2,idleTimeoutMillis:100});
+        db = new client();
     });
 
     it('创建SELECT SQL',async ()=>{
