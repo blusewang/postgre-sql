@@ -260,6 +260,10 @@ class db {
         }
         return this;
     }
+
+    getLastSQL(){
+        return this._helper.sql;
+    }
 }
 
 

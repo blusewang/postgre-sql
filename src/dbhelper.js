@@ -94,19 +94,20 @@ class dbhelper{
         await this.prepareFields();
         this.transformWhere();
         let s = this.fragment;
-        return ['SELECT ' + (s.field === undefined ? '* ' : s.field) + 'FROM ' + s.table +
+        this.sql = 'SELECT ' + (s.field === undefined ? '* ' : s.field) + 'FROM ' + s.table +
             (s.join === undefined ? '' : s.join) +
             (s.where === undefined ? '' : s.where) +
             (s.group === undefined ? '' : s.group) +
             (s.order === undefined ? '' : s.order) +
-            (s.limit === undefined ? '' : s.limit),this.values];
+            (s.limit === undefined ? '' : s.limit);
+        return [this.sql,this.values];
     }
     /**
      * 合成INSERT
      */
     async compileInsertSQL(data){
         await this.prepareFields();
-        let sql = 'INSERT INTO '+this.fragment.table+' (';
+        this.sql = 'INSERT INTO '+this.fragment.table+' (';
         let fields = '';
         let vars = '';
         Object.keys(data).forEach(field=>{
@@ -116,45 +117,34 @@ class dbhelper{
                 fields += field+',';
             }
         });
-        sql += fields.substr(0,fields.length-1) + ') VALUES ('+vars.substr(0,vars.length-1)+')';
-        return [sql,this.values];
+        this.sql += fields.substr(0,fields.length-1) + ') VALUES ('+vars.substr(0,vars.length-1)+')';
+        return [this.sql,this.values];
     }
     /**
      * 合成UPDATE
      */
     async compileUpdateSQL(data){
         await this.prepareFields();
-        let sql = 'UPDATE '+this.fragment.table+' SET ';
+        this.sql = 'UPDATE '+this.fragment.table+' SET ';
         Object.keys(data).forEach(field=>{
             if(this.fields.indexOf(field)>-1){
                 this.values.push(data[field]);
-                sql += field+'=$'+this.values.length+', ';
+                this.sql += field+'=$'+this.values.length+', ';
             }
         });
         this.transformWhere();
-        sql = sql.substr(0,sql.length-2)+' '+ this.fragment.where;
-        return [sql,this.values];
+        this.sql = this.sql.substr(0,this.sql.length-2)+' '+ this.fragment.where;
+        return [this.sql,this.values];
     }
     /**
      * 合成DELETE
      */
     async compileDeleteSQL(){
         await this.prepareFields();
-        let sql = 'DELETE FROM '+this.fragment.table;
+        this.ql = 'DELETE FROM '+this.fragment.table;
         this.transformWhere();
-        sql += this.fragment.where;
-        return [sql.trim(),this.values];
-    }
-    /**
-     * @deprecated
-    */
-    async getLastInsertID(table,pk,fn){
-        try{
-            let fields = await this.pool.query("SELECT currval(pg_get_serial_sequence($1,$2))",[table,pk]);
-            fn(null,fields.rows);
-        }catch (e){
-            fn(e);
-        }
+        this.sql += this.fragment.where;
+        return [this.sql.trim(),this.values];
     }
 }
 module.exports = dbhelper;
