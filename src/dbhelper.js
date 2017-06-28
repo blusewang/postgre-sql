@@ -66,7 +66,9 @@ class dbhelper{
         if(typeof this.fragment.where === 'string') return ;
         let str='';
         Object.keys(this.fragment.where).forEach(field=>{
-            if(this.fields.indexOf(field)>-1){
+            let f = field.split('.');
+            f = f.length>1?f[1]:f[0];
+            if(this.fields.indexOf(f)>-1){
                 this.values.push(this.fragment.where[field]);
                 str += field+'=$'+this.values.length+' AND ';
             }

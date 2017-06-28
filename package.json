@@ -1,7 +1,7 @@
 {
   "name": "node-postgres-builder",
-  "version": "0.1.0",
-  "description": "A SQLBuilder based on node-postgres",
+  "version": "0.1.2",
+  "description": "A PostgreSQL SQLBuilder, based on node-postgres and suport Pool",
   "main": "main",
   "scripts": {
     "test": "mocha"

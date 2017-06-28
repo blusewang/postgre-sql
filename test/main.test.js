@@ -14,7 +14,10 @@ describe('测试Builder',()=>{
     });
 
     it('创建SELECT SQL',async ()=>{
-        let sql = await db.table('public.users').where({uid:6},'user_name is not null').order('uid desc').group('password').field('user_name').page(3).select(false);
+        let sql = await db.table('public.users').where({uid:6},'real_name is not null').order('uid desc').group('sid').field('real_name').page(3).select(false);
+        l(sql);
+        sql = await db.table('public.users u').join(['public.shop s on s.sid=u.sid','public.customer c on c.uid=s.uid'])
+            .where({'u.role':1}).find(false);
         l(sql);
     });
     it('执行FIND',async()=>{
