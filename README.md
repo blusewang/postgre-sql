@@ -1,5 +1,6 @@
-# node-postgres-builder
-A SQLBuilder based on node-postgres
+# postgre-SQL
+A PostgreSQL support for node.js, based on node-postgres and used Pool.
+
 
 ## 安装
 `npm i postgre-sql`

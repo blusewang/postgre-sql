@@ -1,7 +1,7 @@
 {
   "name": "postgre-sql",
   "version": "0.1.3",
-  "description": "A PostgreSQL SQLBuilder, based on node-postgres and suport Pool",
+  "description": "A PostgreSQL support for node.js, based on node-postgres and used Pool.",
   "main": "main",
   "scripts": {
     "test": "mocha"
@@ -9,6 +9,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/blusewang/node-postgres-builder.git"
+  },
+  "engines" : {
+    "node" : ">=7.0.0"
   },
   "keywords": [
     "pg",
