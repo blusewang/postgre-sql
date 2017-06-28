@@ -262,7 +262,7 @@ class db {
     }
 
     getLastSQL(){
-        return this._helper.sql;
+        return [this._helper.sql,this._helper.values];
     }
 }
 

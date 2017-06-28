@@ -141,7 +141,7 @@ class dbhelper{
      */
     async compileDeleteSQL(){
         await this.prepareFields();
-        this.ql = 'DELETE FROM '+this.fragment.table;
+        this.sql = 'DELETE FROM '+this.fragment.table;
         this.transformWhere();
         this.sql += this.fragment.where;
         return [this.sql.trim(),this.values];
