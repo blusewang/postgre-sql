@@ -11,7 +11,7 @@ const connect = (config)=>{
     if(myPool === null) myPool = new Pool(config);
 };
 
-class db {
+class client {
     constructor() {
         if(myPool === null) throw new Error('Please start Pool First!');
         this.onTransaction = false;
@@ -267,4 +267,4 @@ class db {
 }
 
 
-module.exports = {client:db,connect:connect};
+module.exports = {client:client,connect:connect};

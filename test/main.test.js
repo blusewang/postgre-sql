@@ -82,9 +82,6 @@ describe('测试Builder',()=>{
         let res = await db.table('public.users')
             .where({uid:22})
             .delete();
-        res = await db.table('public.users')
-            .where({uid:22})
-            .delete();
         l(res,db.getLastSQL());
     });
 });
