@@ -2,17 +2,17 @@
 A SQLBuilder based on node-postgres
 
 ## 安装
-`npm i node-postgres-builder`
+`npm i postgre-sql`
 ## 配置
 ```js
-const {connect} = require('node-postgres-builder');
+const {connect} = require('postgre-sql');
 connect({user:'postgres',database:'test',max:2,idleTimeoutMillis:100});
 
 ```
 
 ## 使用
 ```js
-const {client} = require('node-postgres-builder');
+const {client} = require('postgre-sql');
 let db = new client();
 (async ()=>{
     let res = await db.table('public.users')
