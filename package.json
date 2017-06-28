@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/blusewang/node-postgres-builder.git"
+    "url": "git+https://github.com/blusewang/postgre-sql.git"
   },
   "engines" : {
     "node" : ">=7.0.0"
@@ -22,9 +22,9 @@
   "author": "bluse <bluse@189.cn>",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/blusewang/node-postgres-builder/issues"
+    "url": "https://github.com/blusewang/postgre-sql/issues"
   },
-  "homepage": "https://github.com/blusewang/node-postgres-builder#readme",
+  "homepage": "https://github.com/blusewang/postgre-sql#readme",
   "dependencies": {
     "pg": "^6.4.0",
     "pg-native": "^1.10.1"
