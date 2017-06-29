@@ -5,6 +5,11 @@ const {Pool} = require('pg').native;
 const {promisify, l} = require('./src/helper');
 const dbhelper = require('./src/dbhelper');
 
+const poolMode = {
+    session:'session',
+    transaction:'transaction',
+    statement:'statement'
+};
 
 let myPool = null;
 const connect = (config)=>{
@@ -14,21 +19,21 @@ const connect = (config)=>{
 class client {
     constructor() {
         if(myPool === null) throw new Error('Please start Pool First!');
-        this.onTransaction = false;
+        this.mode = poolMode.statement;
         this.client = myPool;
         this._q = this.client.query;
         this._helper = new dbhelper(myPool);
     }
 
     /**
-     * 事务区
+     * 事务控制区
      */
     begin() {
         return new Promise(async (resolve, reject) => {
             try {
                 this.client = await myPool.connect();
                 this._q = this.client.query;
-                this.onTransaction = true;
+                this.mode = poolMode.transaction;
                 resolve(await this.client.query('BEGIN'));
             } catch (e) {
                 reject(e);
@@ -43,7 +48,7 @@ class client {
                 this.client.release();
                 this.client = myPool;
                 this._q = this.client.query;
-                this.onTransaction = false;
+                this.mode = poolMode.statement;
                 resolve(r);
             } catch (e) {
                 reject(e);
@@ -58,13 +63,42 @@ class client {
                 this.client.release();
                 this.client = myPool;
                 this._q = this.client.query;
-                this.onTransaction = false;
-                l('commit is done');
+                this.mode = poolMode.statement;
                 resolve(r);
             } catch (e) {
                 reject(e);
             }
         });
+    }
+
+    /**
+     * 会话控制区
+     */
+    connect(){
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.client = await myPool.connect();
+                this._q = this.client.query;
+                this.mode = poolMode.session;
+                resolve(true);
+            } catch (e) {
+                reject(e);
+            }
+        })
+    }
+
+    release(){
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.client.release();
+                this.client = myPool;
+                this._q = this.client.query;
+                this.mode = poolMode.statement;
+                resolve(true);
+            } catch (e) {
+                reject(e);
+            }
+        })
     }
 
 
@@ -105,28 +139,29 @@ class client {
 
     add(data,doit=true) {
         return new Promise(async (resolve, reject) => {
-            let needClose = !this.onTransaction;
+            let needClose = this.mode === poolMode.statement;
             try {
                 let sql = await this._helper.compileInsertSQL(data);
                 if(doit === false) {
                     resolve(sql);
                     return ;
                 }
-                if(!this.onTransaction) await this.begin();
 
-                let res = await promisify(this.client.query, sql,this.client);
+                if(needClose) await this.connect();
+
+                let res = await promisify(client.query, sql,client);
                 let table = this._helper.tables[0];
                 let info = await promisify(this._helper.getTableInfo,[table]);
                 let id = res.rowCount;
                 if(info.pk !== null){
                     let pkSQL = 'SELECT currval(pg_get_serial_sequence($1,$2))';
-                    res = await promisify(this.client.query,[pkSQL,[table,info.pk]],this.client);
+                    res = await promisify(client.query,[pkSQL,[table,info.pk]],client);
                     if(res.rows[0].currval) id = Number(res.rows[0].currval);
                 }
-                if(this.onTransaction && needClose) await this.commit();
+                if(needClose) await this.release();
                 resolve(id);
             } catch (e) {
-                if(this.onTransaction && needClose) await this.rollback();
+                if(needClose) await this.release();
                 reject(e);
             }
         });

@@ -11,15 +11,19 @@ connect({user:'postgres',database:'test',max:2,idleTimeoutMillis:100});
 
 ```
 
-## 使用
+## 使用DEMO
 ```js
 const {client} = require('postgre-sql');
 let db = new client();
 (async ()=>{
-    let res = await db.table('public.users')
-    .where({vip:true},"create_at>'2017-01-01' and coordinate <-> point(116,39) < 1")
-    .field('uid,user_name').order('uid desc').page(2).select();
-    // res -> [{uid:34,use_name:'alice'},{uid:35,user_name:'💘'}...]
+    try{
+        let res = await db.table('public.users')
+            .where({vip:true},"create_at>'2017-01-01' and coordinate <-> point(116,39) < 1")
+            .field('uid,user_name').order('uid desc').page(2).select();
+            // res -> [{uid:34,use_name:'alice'},{uid:35,user_name:'💘'}...]
+    }catch (e){
+        // something else
+    }
     try{
         await db.begin();
         let new_uid = await db.table('public.users').add({user_name:'charles'});
@@ -31,3 +35,70 @@ let db = new client();
 })();
 
 ```
+
+## 会话级别
+
+默认是`statement`级别，这这个级别的语句会平均负载到池中所有的连接。适合并行查询！
+
+当前的会话模式会根据业务自动调整。
+
+### 语句级别 `statement`
+```js
+const {client} = require('postgre-sql');
+let db = new client();
+(async ()=>{
+    try{
+        let res = await db.table('public.users')
+            .where({vip:true},"create_at>'2017-01-01' and coordinate <-> point(116,39) < 1")
+            .field('uid,user_name').order('uid desc').page(2).select();
+            // res -> [{uid:34,use_name:'alice'},{uid:35,user_name:'💘'}...]
+    }catch (e){
+        // something else
+    }
+})();
+```
+
+### 会话级别 `session`
+
+```js
+const {client} = require('postgre-sql');
+let db = new client();
+(async ()=>{
+    try{
+        await db.connect();
+        let res = await db.table('public.users')
+            .where({vip:true},"create_at>'2017-01-01' and coordinate <-> point(116,39) < 1")
+            .field('uid,user_name').order('uid desc').page(2).select();
+            // res -> [{uid:34,use_name:'alice'},{uid:35,user_name:'💘'}...]
+        await db.release(); // Attention! if connection a session don't forget release it!
+    }catch (e){
+        // something else
+    }
+})();
+```
+
+### 事务级别 `transaction`
+
+```js
+const {client} = require('postgre-sql');
+let db = new client();
+(async ()=>{
+    try{
+        await db.begin();
+        let new_uid = await db.table('public.users').add({user_name:'charles'});
+        await db.commit(); // Attention! if start a transaction don't forget finish it!
+    }catch (e){
+        db.rollback(); // Attention! if start a transaction don't forget finish it!
+    }
+    
+})();
+```
+
+## 自动完成
+
+如果表中有`create_at`、`update_at`、`delete_at`。在CUR的操作中会自动填充`NOW()`。
+
+软删除只在`db.table(tableName).where(conditions).delete();`时影响结果。
+
+在`SELECT`类型的语句中，不会主动识，别并剔除`delete_at`非空的记录。需要手动写在`conditions`中。
+

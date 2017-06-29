@@ -3,7 +3,7 @@
  */
 
 const {promisify} = require('./helper');
-const queryTableSQL = "SELECT attname, atttypid ::regtype, attnotnull, attnum FROM pg_attribute WHERE attrelid = '__TABLE__' ::regclass AND attnum > 0 AND attisdropped = 'f'";
+const queryTableSQL = "SELECT attname, atttypid ::regtype, attnotnull, attnum, atthasdef FROM pg_attribute WHERE attrelid = '__TABLE__' ::regclass AND attnum > 0 AND attisdropped = 'f'";
 const queryTablePKSQL = "SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '__TABLE__'::regclass AND i.indisprimary";
 
 let tablesInfo = [];
@@ -110,6 +110,7 @@ class dbhelper{
         this.sql = 'INSERT INTO '+this.fragment.table+' (';
         let fields = '';
         let vars = '';
+        if(typeof data.create_at === 'undefined' && this.fields.indexOf('create_at') > -1) data.create_at = 'NOW()';
         Object.keys(data).forEach(field=>{
             if(this.fields.indexOf(field)>-1){
                 this.values.push(data[field]);
@@ -126,6 +127,7 @@ class dbhelper{
     async compileUpdateSQL(data){
         await this.prepareFields();
         this.sql = 'UPDATE '+this.fragment.table+' SET ';
+        if(typeof data.update_at === 'undefined' && this.fields.indexOf('update_at') > -1) data.update_at = 'NOW()';
         Object.keys(data).forEach(field=>{
             if(this.fields.indexOf(field)>-1){
                 this.values.push(data[field]);
@@ -141,9 +143,11 @@ class dbhelper{
      */
     async compileDeleteSQL(){
         await this.prepareFields();
-        this.sql = 'DELETE FROM '+this.fragment.table;
         this.transformWhere();
-        this.sql += this.fragment.where;
+        if(this.fields.indexOf('delete_at') > -1)
+            this.sql = 'UPDATE '+this.fragment.table+' SET delete_at=NOW() '+this.fragment.where;
+        else
+            this.sql = 'DELETE FROM '+this.fragment.table+this.fragment.where;
         return [this.sql.trim(),this.values];
     }
 }

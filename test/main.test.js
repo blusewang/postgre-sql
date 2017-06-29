@@ -26,7 +26,10 @@ describe('测试Builder',()=>{
     });
     it('执行 COUNT',async()=>{
         let res = await db.table('public.users')
-        // .where({uid:6})
+            .where({uid:600})
+            .count();
+        l(res);
+        res = await db.table('public.users')
             .count();
         l(res);
     });
@@ -39,23 +42,23 @@ describe('测试Builder',()=>{
     it('创建 UPDATE',async()=>{
         let res = await db.table('public.users')
             .where({uid:6})
-            .save({password:'password'},false);
+            .save({password:Math.random().toString(36).substr(2)},false);
         l(res);
     });
     it('执行 UPDATE',async()=>{
         let res = await db.table('public.users')
             .where({uid:6})
-            .save({password:'lalala',status:{a:'b'},coordinate:'(23,45)'});
+            .save({password:Math.random().toString(36).substr(2),status:{a:'b'},coordinate:'(23,45)'});
         l(res);
     });
     it('创建 INSERT',async()=>{
         let res = await db.table('public.users')
-            .add({user_name:'balama',password:'password',status:{mydata:[3,4,5,76,7]}},false);
+            .add({user_name:Math.random().toString(36).substr(2),password:Math.random().toString(36).substr(2),status:{mydata:[3,4,5,76,7]}},false);
         l(res);
     });
     it('执行 INSERT',async()=>{
         let res = await db.table('public.users')
-            .add({user_name:'balama',password:'password',status:{mydata:[3,4,5,76,7]}});
+            .add({user_name:Math.random().toString(36).substr(2),password:Math.random().toString(36).substr(2),status:{mydata:[3,4,5,76,7]}});
         l(res);
     });
     it('创建 DELETE',async()=>{
@@ -66,7 +69,7 @@ describe('测试Builder',()=>{
     });
     it('执行 DELETE',async()=>{
         let res = await db.table('public.users')
-            .where({uid:24})
+            .where({uid:17})
             .delete();
         l(res);
     });
