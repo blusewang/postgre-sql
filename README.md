@@ -72,6 +72,7 @@ let db = new client();
             // res -> [{uid:34,use_name:'alice'},{uid:35,user_name:'💘'}...]
         await db.release(); // Attention! if connection a session don't forget release it!
     }catch (e){
+        await db.release(); // Attention! if connection a session don't forget release it!
         // something else
     }
 })();
