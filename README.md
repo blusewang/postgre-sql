@@ -42,7 +42,7 @@ let db = new client();
 
 当前的会话模式会根据业务自动调整。
 
-### 语句级别 `statement`
+### 语句模式 `statement`
 ```js
 const {client} = require('postgre-sql');
 let db = new client();
@@ -58,7 +58,7 @@ let db = new client();
 })();
 ```
 
-### 会话级别 `session`
+### 会话模式 `session`
 
 ```js
 const {client} = require('postgre-sql');
@@ -77,7 +77,7 @@ let db = new client();
 })();
 ```
 
-### 事务级别 `transaction`
+### 事务模式 `transaction`
 
 ```js
 const {client} = require('postgre-sql');
