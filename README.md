@@ -97,7 +97,7 @@ let db = new client();
 
 ## 自动完成
 
-如果表中有`create_at`、`update_at`、`delete_at`。在URD的操作中会自动填充`NOW()`。
+如果表中有`create_at`、`update_at`、`delete_at`。在CUD的操作中会自动填充`NOW()`。
 
 软删除只在`db.table(tableName).where(conditions).delete();`时影响结果。
 
