@@ -9,13 +9,12 @@ const {promisify,l} = require('../src/helper');
 describe('测试Builder',()=>{
     let db;
     beforeEach(()=>{
-        // connect({user:'postgres',database:'test',max:2,idleTimeoutMillis:100});
         connect({user:'jnpklagg',password:'80erFY8gaD7uqje5YvL1-AXEbaZr9nvd',host:'echo.db.elephantsql.com',database:'jnpklagg',max:2,idleTimeoutMillis:100,connect_timeout:40*1000});
         db = new client();
     });
 
     it('创建SELECT SQL',async ()=>{
-        let sql = await db.table('public.users').where({uid:6},'real_name is not null').order('uid desc').group('sid').field('real_name').page(3).select(false);
+        let sql = await db.table('public.shop').where({uid:6},'shop_name is not null').order('uid desc').group('sid').field('real_name').page(3).select(false);
         l(sql);
         sql = await db.table('public.users u').join(['public.shop s on s.sid=u.sid','public.customer c on c.uid=s.uid'])
             .where({'u.role':1}).find(false);
@@ -54,12 +53,22 @@ describe('测试Builder',()=>{
     });
     it('创建 INSERT',async()=>{
         let res = await db.table('public.users')
-            .add({user_name:Math.random().toString(36).substr(2),password:Math.random().toString(36).substr(2),status:{mydata:[3,4,5,76,7]}},false);
+            .add({
+                user_name:Math.random().toString(36).substr(2),
+                password:Math.random().toString(36).substr(2),
+                status:{mydata:[3,4,5,76,7]},
+                coordinate:'(116,39)'
+                },false);
         l(res);
     });
     it('执行 INSERT',async()=>{
         let res = await db.table('public.users')
-            .add({user_name:Math.random().toString(36).substr(2),passwd:Math.random().toString(36).substr(2),status:{mydata:[3,4,5,76,7]}});
+            .add({
+                user_name:Math.random().toString(36).substr(2),
+                password:Math.random().toString(36).substr(2),
+                status:{mydata:[3,4,5,76,7]},
+                coordinate:'(116,39)'
+            });
         l(res);
     });
     it('创建 DELETE',async()=>{

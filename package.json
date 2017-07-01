@@ -1,17 +1,17 @@
 {
   "name": "postgre-sql",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "A PostgreSQL support for node.js, based on node-postgres and used Pool.",
   "main": "main",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --timeout 15000"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/blusewang/postgre-sql.git"
   },
-  "engines" : {
-    "node" : ">=7.0.0"
+  "engines": {
+    "node": ">=7.0.0"
   },
   "keywords": [
     "pg",

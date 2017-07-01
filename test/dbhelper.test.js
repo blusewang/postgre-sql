@@ -8,7 +8,7 @@ const {describe,beforeEach,it} = require("mocha");
 const dbhelper = require('../src/dbhelper');
 const {promisify,l} = require('../src/helper');
 const {Pool} = require('pg').native;
-const myPool = new Pool({user:'postgres',database:'test',max:2,idleTimeoutMillis:100});
+const myPool = new Pool({user:'jnpklagg',password:'80erFY8gaD7uqje5YvL1-AXEbaZr9nvd',host:'echo.db.elephantsql.com',database:'jnpklagg',max:2,idleTimeoutMillis:100,connect_timeout:40*1000});
 
 describe('db helper 为SQL Builder 提供必要的信息',()=>{
     let helper;
