@@ -1,6 +1,6 @@
 {
   "name": "postgre-sql",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "A PostgreSQL support for node.js, based on node-postgres and used Pool.",
   "main": "main",
   "scripts": {
