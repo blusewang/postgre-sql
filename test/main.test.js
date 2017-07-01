@@ -10,6 +10,7 @@ describe('测试Builder',()=>{
     let db;
     beforeEach(()=>{
         connect({user:'postgres',database:'test',max:2,idleTimeoutMillis:100});
+        // connect({user:'jnpklagg',password:'80erFY8gaD7uqje5YvL1-AXEbaZr9nvd',host:'echo.db.elephantsql.com',database:'jnpklagg',max:2,idleTimeoutMillis:100});
         db = new client();
     });
 

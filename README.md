@@ -1,3 +1,5 @@
+<p align="center"><img src="https://user-images.githubusercontent.com/1764005/27760456-3dffad94-5e7a-11e7-875a-095b8a0dfd57.png"/></p>
+
 # postgre-SQL
 A PostgreSQL support for node.js, based on node-postgres and used Pool.
 

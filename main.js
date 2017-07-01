@@ -149,13 +149,13 @@ class client {
 
                 if(needClose) await this.connect();
 
-                let res = await promisify(client.query, sql,client);
+                let res = await promisify(this.client.query, sql,this.client);
                 let table = this._helper.tables[0];
                 let info = await promisify(this._helper.getTableInfo,[table]);
                 let id = res.rowCount;
                 if(info.pk !== null){
                     let pkSQL = 'SELECT currval(pg_get_serial_sequence($1,$2))';
-                    res = await promisify(client.query,[pkSQL,[table,info.pk]],client);
+                    res = await promisify(this.client.query,[pkSQL,[table,info.pk]],this.client);
                     if(res.rows[0].currval) id = Number(res.rows[0].currval);
                 }
                 if(needClose) await this.release();
