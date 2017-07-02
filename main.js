@@ -229,7 +229,7 @@ class client {
                     return ;
                 }
                 let res = await promisify(this._q, sql,this.client);
-                resolve(res.rows[0][field]);
+                resolve(res.rows[0]?res.rows[0][field]:null);
             } catch (e) {
                 reject(e);
             }
