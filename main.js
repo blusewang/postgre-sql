@@ -211,7 +211,7 @@ class client {
                     return ;
                 }
                 let res = await promisify(this._q, sql,this.client);
-                resolve(res.rows[0].count);
+                resolve(Number(res.rows[0].count));
             } catch (e) {
                 reject(e);
             }
