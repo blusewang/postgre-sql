@@ -121,6 +121,16 @@ class client {
         });
     }
 
+    query(sql){
+        return new Promise(async (resolve,reject) => {
+            try{
+                resolve(await promisify(this._q, [sql], this.client));
+            }catch (e){
+                reject(e);
+            }
+        });
+    }
+
     save(data, doit=true) {
         return new Promise(async (resolve, reject) => {
             try {
