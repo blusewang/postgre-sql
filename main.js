@@ -90,10 +90,12 @@ class client {
     release(){
         return new Promise(async (resolve, reject) => {
             try {
-                this.client.release();
-                this.client = myPool;
-                this._q = this.client.query;
-                this.mode = poolMode.statement;
+                if(this.mode === poolMode.session){
+                    this.client.release();
+                    this.client = myPool;
+                    this._q = this.client.query;
+                    this.mode = poolMode.statement;
+                }
                 resolve(true);
             } catch (e) {
                 reject(e);
