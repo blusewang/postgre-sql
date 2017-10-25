@@ -9,7 +9,7 @@ const {promisify,l} = require('../src/helper');
 describe('测试Builder',()=>{
     let db;
     beforeEach(()=>{
-        connect({user:'jnpklagg',password:'80erFY8gaD7uqje5YvL1-AXEbaZr9nvd',host:'echo.db.elephantsql.com',database:'jnpklagg',max:2,idleTimeoutMillis:100,connect_timeout:40*1000});
+        connect({user:'jnpklagg',password:'80erFY8gaD7uqje5YvL1-AXEbaZr9nvd',host:'echo.db.elephantsql.com',database:'jnpklagg',max:2,idleTimeoutMillis:100,connect_timeout:4*1000});
         db = new client();
     });
 
@@ -91,10 +91,18 @@ describe('测试Builder',()=>{
         await db.rollback();
         l(res);
     });
+    it('执行 JOIN',async()=>{
+        let res = await db.table('public.users u')
+            .join(['public.shop s on s.sid=u.sid','public.customer c on c.uid=s.uid'])
+            .where({'u.uid':21})
+            .field('*')
+            .select();
+        l(res,db.getLastSQL());
+    });
     it('上次执行的语句',async()=>{
-        let res = await db.table('public.users')
-            .where({uid:22})
-            .delete();
+        let res = await db.table('public.users u')
+            .where({'u.uid':21})
+            .select();
         l(res,db.getLastSQL());
     });
 });
