@@ -99,6 +99,14 @@ describe('测试Builder',()=>{
             .select();
         l(res,db.getLastSQL());
     });
+    it('执行 JOIN 的表中存在子查询',async()=>{
+        let res = await db.table('public.users u')
+            .join(['public.shop s on s.sid=u.sid','(select * from public.customer) c on c.uid=s.uid'])
+            .where({'u.uid':21})
+            .field('c.*')
+            .select();
+        l(res,db.getLastSQL());
+    });
     it('上次执行的语句',async()=>{
         let res = await db.table('public.users u')
             .where({'u.uid':21})
