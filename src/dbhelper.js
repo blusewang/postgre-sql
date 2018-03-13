@@ -108,17 +108,39 @@ class dbhelper{
     async compileInsertSQL(data){
         await this.prepareFields();
         this.sql = 'INSERT INTO '+this.fragment.table+' (';
-        let fields = '';
-        let vars = '';
+        let fields = [];
+        let vars = [];
         if(typeof data.create_at === 'undefined' && this.fields.indexOf('create_at') > -1) data.create_at = 'NOW()';
         Object.keys(data).forEach(field=>{
             if(this.fields.indexOf(field)>-1){
                 this.values.push(data[field]);
-                vars += '$'+this.values.length+',';
-                fields += field+',';
+                vars.push('$'+this.values.length);
+                fields.push(field);
             }
         });
-        this.sql += fields.substr(0,fields.length-1) + ') VALUES ('+vars.substr(0,vars.length-1)+')';
+        this.sql += fields.join(',') + ') VALUES ('+vars.join(',')+')';
+        return [this.sql,this.values];
+    }
+    /**
+     * 合成UPSERT
+     */
+    async compileUpSertSQL(data,conflict){
+        await this.prepareFields();
+        this.sql = 'INSERT INTO '+this.fragment.table+' (';
+        let fields = [];
+        let vars = [];
+        let upFields = [];
+        if(typeof data.create_at === 'undefined' && this.fields.indexOf('create_at') > -1) data.create_at = 'NOW()';
+        Object.keys(data).forEach(field=>{
+            if(this.fields.indexOf(field)>-1){
+                this.values.push(data[field]);
+                vars.push('$'+this.values.length);
+                fields.push(field);
+                if(conflict.indexOf(field) === -1) upFields.push( field + '=EXCLUDED.' + field )
+            }
+        });
+        this.sql += fields.join(',') + ') VALUES ('+vars.join(',')+') ON CONFLICT (' +
+            conflict.join(',') + ') DO UPDATE SET ' + upFields.join(',');
         return [this.sql,this.values];
     }
     /**

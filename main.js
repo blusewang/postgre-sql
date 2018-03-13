@@ -107,11 +107,11 @@ class client {
     /**
      * 业务区
      */
-    select(doit=true) {
+    select(doIt=true) {
         return new Promise(async (resolve, reject) => {
             try {
                 let sql = await this._helper.compileSelectSQL();
-                if(doit === false) {
+                if(doIt === false) {
                     resolve(sql);
                     return ;
                 }
@@ -133,11 +133,11 @@ class client {
         });
     }
 
-    save(data, doit=true) {
+    save(data, doIt=true) {
         return new Promise(async (resolve, reject) => {
             try {
                 let sql = await this._helper.compileUpdateSQL(data);
-                if(doit === false) {
+                if(doIt === false) {
                     resolve(sql);
                     return ;
                 }
@@ -149,12 +149,12 @@ class client {
         });
     }
 
-    add(data,doit=true) {
+    add(data,doIt=true) {
         return new Promise(async (resolve, reject) => {
             let needClose = this.mode === poolMode.statement;
             try {
                 let sql = await this._helper.compileInsertSQL(data);
-                if(doit === false) {
+                if(doIt === false) {
                     resolve(sql);
                     return ;
                 }
@@ -179,12 +179,42 @@ class client {
         });
     }
 
-    delete(doit=true) {
+    upsert(data,conflict,doIt=true){
+        return new Promise(async (resolve, reject) => {
+            let needClose = this.mode === poolMode.statement;
+            try {
+                let sql = await this._helper.compileUpSertSQL(data,conflict);
+                if(doIt === false) {
+                    resolve(sql);
+                    return ;
+                }
+
+                if(needClose) await this.connect();
+
+                let res = await promisify(this.client.query, sql,this.client);
+                let table = this._helper.tables[0];
+                let info = await promisify(this._helper.getTableInfo,[table]);
+                let id = res.rowCount;
+                if(info.pk !== null){
+                    let pkSQL = 'SELECT currval(pg_get_serial_sequence($1,$2))';
+                    res = await promisify(this.client.query,[pkSQL,[table,info.pk]],this.client);
+                    if(res.rows[0].currval) id = Number(res.rows[0].currval);
+                }
+                if(needClose) await this.release();
+                resolve(id);
+            } catch (e) {
+                if(needClose) await this.release();
+                reject(e);
+            }
+        });
+    }
+
+    delete(doIt=true) {
         return new Promise(async (resolve, reject) => {
             try {
                 this.limit(1);
                 let sql = await this._helper.compileDeleteSQL();
-                if(doit === false) {
+                if(doIt === false) {
                     resolve(sql);
                     return ;
                 }
@@ -196,12 +226,12 @@ class client {
         });
     }
 
-    find(doit=true) {
+    find(doIt=true) {
         return new Promise(async (resolve, reject) => {
             try {
                 this.limit(1);
                 let sql = await this._helper.compileSelectSQL();
-                if(doit === false) {
+                if(doIt === false) {
                     resolve(sql);
                     return ;
                 }
@@ -213,12 +243,12 @@ class client {
         });
     }
 
-    count(doit=true) {
+    count(doIt=true) {
         return new Promise(async (resolve, reject) => {
             try {
                 this.field('count(1) count').limit(1);
                 let sql = await this._helper.compileSelectSQL();
-                if(doit === false) {
+                if(doIt === false) {
                     resolve(sql);
                     return ;
                 }
@@ -230,13 +260,13 @@ class client {
         });
     }
 
-    getField(field,doit=true) {
+    getField(field,doIt=true) {
         return new Promise(async (resolve, reject) => {
             try {
                 field = field.split(' ')[0];
                 this.field(field).limit(1);
                 let sql = await this._helper.compileSelectSQL();
-                if(doit === false) {
+                if(doIt === false) {
                     resolve(sql);
                     return ;
                 }

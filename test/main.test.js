@@ -97,4 +97,9 @@ describe('测试Builder',()=>{
             .delete();
         l(res,db.getLastSQL());
     });
+    it('执行 UPSERT',async()=>{
+        let res = await db.table('public.users')
+            .upsert({uid:6,password:'....'},['uid']);
+        l(res,db.getLastSQL());
+    });
 });
