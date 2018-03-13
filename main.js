@@ -330,9 +330,10 @@ class client {
             this._helper.fragment.join = t + ' ' + join + ' ';
             this._helper.tables.push(join.split(' ')[0]);
         } else {
+            this._helper.fragment.join = '';
             join.forEach(j => {
-                this._helper.fragment.join = t + ' ' + j + ' ';
-                this._helper.tables.push(j.split(' ')[0]);
+                this._helper.fragment.join += t + ' ' + j + ' ';
+                if (!j.startsWith('(')) this._helper.tables.push(j.split(' ')[0]);
             })
         }
         return this;
